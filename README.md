@@ -32,10 +32,7 @@ O projeto foi construído passando por todas as etapas essenciais de um ciclo pr
 
 ## ⚙️ Instalação e Configuração
 
-**1. Pré-requisitos:**
-Certifique-se de ter o Python (3.11 ou 3.12) instalado e corretamente configurado nas variáveis de ambiente (`PATH`) do seu sistema.
-
-**2. Instalação das dependências:**
+**Instalação das dependências:**
 Abra o seu terminal e execute o comando abaixo para instalar todas as bibliotecas necessárias para o pipeline rodar:
 
 ```bash
