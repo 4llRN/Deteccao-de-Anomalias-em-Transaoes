@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import shap
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report
-from lightgbm import LGBMClassifier  # <-- Importação alterada para LightGBM
+from lightgbm import LGBMClassifier  
 
 # 2. Carga e Preparação (Mantendo a transformação logarítmica)
 url = "https://storage.googleapis.com/download.tensorflow.org/data/creditcard.csv"
