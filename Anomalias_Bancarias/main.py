@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import shap
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report
-from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier  # <-- Importação alterada para LightGBM
 
 # 2. Carga e Preparação (Mantendo a transformação logarítmica)
 url = "https://storage.googleapis.com/download.tensorflow.org/data/creditcard.csv"
@@ -21,23 +21,24 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, stratify=y, test_size=0.3, random_state=42
 )
 
-# 3. Treinamento Inicial com XGBoost
-print("\n--- Treinando XGBoost Padrão ---")
-xgb = XGBClassifier(
-    scale_pos_weight=10, 
-    eval_metric="logloss",
-    random_state=42
+# 3. Treinamento Inicial com LightGBM
+print("\n--- Treinando LightGBM Padrão ---")
+# LightGBM tem o class_weight="balanced" para lidar com o desbalanceamento automaticamente
+lgbm = LGBMClassifier(
+    class_weight="balanced", 
+    random_state=42,
+    n_jobs=-1
 )
-xgb.fit(X_train, y_train)
+lgbm.fit(X_train, y_train)
 
-y_pred_xgb = xgb.predict(X_test)
-print(classification_report(y_test, y_pred_xgb))
+y_pred_lgbm = lgbm.predict(X_test)
+print(classification_report(y_test, y_pred_lgbm))
 
-# 4. Feature Importance (Gráfico simples do XGBoost)
-importancias = xgb.feature_importances_
+# 4. Feature Importance (Gráfico simples do LightGBM)
+importancias = lgbm.feature_importances_
 plt.figure(figsize=(10, 5))
 plt.bar(range(len(importancias)), importancias)
-plt.title("Importância das Variáveis (Visão Geral)")
+plt.title("Importância das Variáveis (Visão Geral - LightGBM)")
 plt.show()
 
 # 5. Ajuste Fino de Parâmetros (GridSearchCV)
@@ -49,7 +50,7 @@ param_grid = {
 
 # Usando n_jobs=-1 para acelerar a busca usando todos os núcleos do PC
 grid = GridSearchCV(
-    XGBClassifier(scale_pos_weight=10, eval_metric="logloss", random_state=42),
+    LGBMClassifier(class_weight="balanced", random_state=42), # <-- Base alterada para LightGBM
     param_grid,
     scoring="recall",
     cv=3,
@@ -70,5 +71,8 @@ print("\n--- Gerando explicação SHAP ---")
 explainer = shap.Explainer(melhor_modelo)
 # Calculando SHAP values apenas para as 100 primeiras linhas para economizar tempo
 shap_values = explainer(X_test[:100])
+
+shap.plots.bar(shap_values, show=False) 
+plt.show()
 
 shap.plots.bar(shap_values)
